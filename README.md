@@ -138,6 +138,11 @@ Deprecated config aliases from older drafts are accepted with warnings and norma
 
 Use Arch Sherpa for architecture scaffolding and `semver_sherpa` for disciplined release/version workflows. Together they provide structure-first development with semver-driven delivery in the Flutter Sherpa Suite.
 
+## Support
+
+- Buy Me a Coffee: https://buymeacoffee.com/carlosfdev
+- Patreon: https://patreon.com/CarlosF_dev
+
 ## Docs
 
 - [Pub.dev Example](example/README.md)
