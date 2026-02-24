@@ -1,0 +1,16 @@
+schema_version: 1
+project:
+  core: [theme, widgets, utils, constants, routes]
+features:
+  base_path: lib/features
+  structure:
+    domain: [entities, repositories, usecases]
+    presentation: [controllers, pages, widgets]
+    data: [repositories, models, datasources]
+    application: []
+state_management:
+  type: riverpod
+tests:
+  enabled: false
+deprecations:
+  policy: warn
