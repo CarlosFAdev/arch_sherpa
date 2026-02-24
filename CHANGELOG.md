@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-02-24
+
+### Added
+- README support section with Buy Me a Coffee and Patreon links.
+
 ## [0.2.0] - 2026-02-24
 
 ### Added
