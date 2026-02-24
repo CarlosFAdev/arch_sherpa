@@ -1,6 +1,6 @@
 name: arch_sherpa
 description: Arch Sherpa — Part of the Flutter Sherpa Suite. Opinionated architecture scaffolding for Flutter projects.
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/CarlosFAdev/arch_sherpa
 repository: https://github.com/CarlosFAdev/arch_sherpa
 issue_tracker: https://github.com/CarlosFAdev/arch_sherpa/issues

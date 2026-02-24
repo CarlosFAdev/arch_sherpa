@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-24
+
 ### Added
 - New CLI capabilities:
   - `doctor`
@@ -44,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved missing-command handling to return structured CLI error instead of unknown command.
 - `config migrate --check` now detects normalized output drift against existing `structure.yaml`.
 - Added `.pubignore` to optimize published package contents.
+- Expanded Dartdoc comments across public API to improve pub points/documentation coverage.
 
 ## [0.1.0] - 2026-02-24
 
