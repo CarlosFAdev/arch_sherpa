@@ -447,8 +447,19 @@ int _handleConfigMigrate(
   Directory root,
   List<String> warnings,
 ) {
+  final migrator = ConfigMigrator();
+  final planned = migrator.migrate(
+    projectRoot: root,
+    config: config,
+    writeToFile: false,
+  );
+  final structureFile = File('${root.path}/structure.yaml');
+  final structureDiffers = structureFile.existsSync() &&
+      _normalizeContent(structureFile.readAsStringSync()) !=
+          _normalizeContent(planned.yaml);
   final migrationRequired = warnings.isNotEmpty ||
-      config.schemaVersion < ArchSherpaConfig.latestSchemaVersion;
+      config.schemaVersion < ArchSherpaConfig.latestSchemaVersion ||
+      structureDiffers;
 
   if (context.checkMode) {
     if (context.jsonOutput) {
@@ -457,6 +468,7 @@ int _handleConfigMigrate(
         'command': 'config migrate',
         'check': true,
         'migration_required': migrationRequired,
+        'structure_differs': structureDiffers,
         'warnings': warnings,
       });
       return migrationRequired ? 1 : 0;
@@ -467,6 +479,10 @@ int _handleConfigMigrate(
     _printWarnings(warnings);
     if (migrationRequired) {
       stdout.writeln('Migration required.');
+      if (structureDiffers) {
+        stdout.writeln(
+            'Reason: structure.yaml differs from normalized migration output.');
+      }
       return 1;
     }
     stdout.writeln('No migration required.');
@@ -481,7 +497,7 @@ int _handleConfigMigrate(
     );
   }
 
-  final result = ConfigMigrator().migrate(
+  final result = migrator.migrate(
     projectRoot: root,
     config: config,
     writeToFile: !context.dryRun,
@@ -756,4 +772,8 @@ void _printWarnings(List<String> warnings) {
   for (final warning in warnings) {
     stdout.writeln('Warning: $warning');
   }
+}
+
+String _normalizeContent(String value) {
+  return value.replaceAll('\r\n', '\n').trim();
 }

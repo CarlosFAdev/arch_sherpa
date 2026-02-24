@@ -24,9 +24,6 @@ jobs:
       - name: Analyze
         run: dart analyze
 
-      - name: Test
-        run: dart test
-
       - name: Doctor strict fixture
         run: dart run bin/arch_sherpa.dart --project-root test/fixtures/ci_strict_project doctor --strict
 

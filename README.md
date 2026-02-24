@@ -39,7 +39,7 @@ Command behavior:
 - Exit code `1` on errors
 - Never writes outside project root
 - Never overwrites existing files/directories
-- Supports `--dry-run`, `--json`, `--project-root <path>`, `--write <path>`, and `--fail-on-deprecated`
+- Supports `--dry-run`, `--json`, `--project-root <path>`, `--write <path>`, `--fail-on-deprecated`, `--check`, and `--strict`
 
 ## Configuration Precedence
 
@@ -110,6 +110,7 @@ deprecations:
 - `arch_sherpa config migrate`: emits a migrated config file (`structure.migrated.yaml`)
   - in-place mode: `arch_sherpa config migrate --write structure.yaml`
   - CI gate mode: `arch_sherpa config migrate --check`
+  - check mode now also detects diffs between `structure.yaml` and normalized migration output
 - `arch_sherpa config deprecations`: explicit report of deprecated keys and replacement hints
 - `deprecations.policy: error` can enforce the same behavior as `--fail-on-deprecated` in CI
 - `arch_sherpa doctor`: runs diagnostics suitable for CI and local checks

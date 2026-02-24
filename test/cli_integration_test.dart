@@ -242,6 +242,22 @@ stateManagement:
     });
 
     test('config migrate --check passes when config is canonical', () async {
+      final migrate = await _runCli(
+        ['config', 'migrate', '--write', 'structure.yaml'],
+        projectRoot: tempRoot.path,
+      );
+      expect(migrate.exitCode, 0);
+      final result = await _runCli(
+        ['config', 'migrate', '--check'],
+        projectRoot: tempRoot.path,
+      );
+      expect(result.exitCode, 0);
+      expect(result.stdout, contains('No migration required.'));
+    });
+
+    test(
+        'config migrate --check fails when structure differs from normalized output',
+        () async {
       File('${tempRoot.path}/structure.yaml').writeAsStringSync('''
 schema_version: 1
 state_management:
@@ -251,8 +267,8 @@ state_management:
         ['config', 'migrate', '--check'],
         projectRoot: tempRoot.path,
       );
-      expect(result.exitCode, 0);
-      expect(result.stdout, contains('No migration required.'));
+      expect(result.exitCode, 1);
+      expect(result.stdout, contains('structure.yaml differs'));
     });
 
     test('audit detects drift for missing feature paths', () async {

@@ -40,6 +40,7 @@ Migrates resolved configuration to latest schema version and emits:
 - `structure.migrated.yaml` (unless `--dry-run`)
 - Use `--write structure.yaml` to migrate in-place.
 - Use `--check` to fail when migration is required (CI gate mode).
+  Check mode also fails if `structure.yaml` differs from normalized migration output.
 
 ## `arch_sherpa config deprecations`
 

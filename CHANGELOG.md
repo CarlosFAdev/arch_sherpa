@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `doctor --strict` profile and CI fixture check for strict diagnostics.
 - Added `check` and `config check` aliases for validation command flow.
 - Improved missing-command handling to return structured CLI error instead of unknown command.
+- `config migrate --check` now detects normalized output drift against existing `structure.yaml`.
+- Added `.pubignore` to optimize published package contents.
 
 ## [0.1.0] - 2026-02-24
 
