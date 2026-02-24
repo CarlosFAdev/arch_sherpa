@@ -1,7 +1,9 @@
 import 'capabilities.dart';
 import 'config_model.dart';
 
+/// Compatibility evaluation result for selected state management and structure.
 class CompatibilityResult {
+  /// Creates a compatibility result.
   CompatibilityResult({
     required this.isCompatible,
     required this.detectedCapabilities,
@@ -10,14 +12,25 @@ class CompatibilityResult {
     required this.suggestion,
   });
 
+  /// Whether the configuration satisfies required capabilities.
   final bool isCompatible;
+
+  /// Capabilities inferred from configured feature structure.
   final Set<Capability> detectedCapabilities;
+
+  /// Capabilities expected by selected state management type.
   final Set<Capability> requiredCapabilities;
+
+  /// Human-readable diagnostic summary.
   final String message;
+
+  /// Suggested remediation when configuration is incompatible.
   final String suggestion;
 }
 
+/// Validates architecture capability requirements for state management modes.
 class CompatibilityChecker {
+  /// Checks whether config structure is compatible with state management.
   CompatibilityResult check(ArchSherpaConfig config) {
     final detected = _detectCapabilities(config.features.structure);
     final required = _requiredCapabilities(config.stateManagement.type);

@@ -4,7 +4,9 @@ import 'dart:io';
 import '../utils/file_utils.dart';
 import 'config_model.dart';
 
+/// Result of running a config migration operation.
 class ConfigMigrationResult {
+  /// Creates a migration result.
   ConfigMigrationResult({
     required this.beforeVersion,
     required this.afterVersion,
@@ -14,20 +16,34 @@ class ConfigMigrationResult {
     required this.overwroteExisting,
   });
 
+  /// Schema version before migration.
   final int beforeVersion;
+
+  /// Schema version after migration.
   final int afterVersion;
+
+  /// Whether output was written to disk.
   final bool written;
+
+  /// Relative output file path used by migration.
   final String outputPath;
+
+  /// Migrated configuration serialized as YAML.
   final String yaml;
+
+  /// Whether migration overwrote an existing output file.
   final bool overwroteExisting;
 }
 
+/// Produces migrated/normalized structure config output.
 class ConfigMigrator {
+  /// Creates a migrator with optional file utility overrides.
   ConfigMigrator({FileUtils? fileUtils})
       : _fileUtils = fileUtils ?? FileUtils();
 
   final FileUtils _fileUtils;
 
+  /// Migrates the provided config and optionally writes the result to disk.
   ConfigMigrationResult migrate({
     required Directory projectRoot,
     required ArchSherpaConfig config,

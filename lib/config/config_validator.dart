@@ -1,6 +1,8 @@
 import 'config_model.dart';
 
+/// Thrown when configuration validation fails.
 class ConfigValidationException implements Exception {
+  /// Creates a validation exception with a human-readable message.
   ConfigValidationException(this.message);
 
   final String message;
@@ -9,9 +11,11 @@ class ConfigValidationException implements Exception {
   String toString() => message;
 }
 
+/// Validates user configuration and feature names.
 class ConfigValidator {
   static final RegExp _folderNamePattern = RegExp(r'^[a-zA-Z0-9_-]+$');
 
+  /// Validates the complete effective configuration.
   void validate(ArchSherpaConfig config) {
     _validateSchemaVersion(config.schemaVersion);
     _validateCore(config.project.core);
@@ -91,6 +95,7 @@ class ConfigValidator {
     }
   }
 
+  /// Validates a CLI feature name argument.
   void validateFeatureName(String featureName) {
     if (featureName.trim().isEmpty) {
       throw ConfigValidationException(

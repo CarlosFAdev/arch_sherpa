@@ -4,21 +4,32 @@ import 'package:yaml/yaml.dart';
 
 import 'config_model.dart';
 
+/// Source from which the effective configuration was resolved.
 enum ConfigSource { structureYaml, pubspecYaml, defaults }
 
+/// Effective configuration with source metadata and deprecation warnings.
 class ConfigLoadResult {
+  /// Creates a configuration load result.
   ConfigLoadResult({
     required this.config,
     required this.source,
     required this.warnings,
   });
 
+  /// Resolved effective configuration.
   final ArchSherpaConfig config;
+
+  /// Primary source used during resolution.
   final ConfigSource source;
+
+  /// Deprecation warnings found while loading raw config.
   final List<String> warnings;
 }
 
+/// Loads and normalizes configuration with precedence and alias support.
 class ConfigLoader {
+  /// Loads config using precedence:
+  /// structure.yaml > pubspec.yaml.flutter_sherpa.arch_sherpa > defaults.
   ConfigLoadResult load({required Directory projectRoot}) {
     final defaultsMap = ArchSherpaConfig.toMap(ArchSherpaConfig.defaults());
 

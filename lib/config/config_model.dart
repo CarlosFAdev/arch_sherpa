@@ -1,4 +1,6 @@
+/// Canonical Arch Sherpa configuration model.
 class ArchSherpaConfig {
+  /// Creates a full configuration object.
   ArchSherpaConfig({
     required this.schemaVersion,
     required this.project,
@@ -15,8 +17,10 @@ class ArchSherpaConfig {
   final TestsConfig tests;
   final DeprecationsConfig deprecations;
 
+  /// Latest schema version supported by this tool build.
   static const int latestSchemaVersion = 1;
 
+  /// Default configuration used when no external config is provided.
   factory ArchSherpaConfig.defaults() {
     return ArchSherpaConfig(
       schemaVersion: latestSchemaVersion,
@@ -38,6 +42,7 @@ class ArchSherpaConfig {
     );
   }
 
+  /// Returns a copy with selected fields replaced.
   ArchSherpaConfig copyWith({
     int? schemaVersion,
     ProjectConfig? project,
@@ -56,6 +61,7 @@ class ArchSherpaConfig {
     );
   }
 
+  /// Creates configuration from a dynamic map (YAML-decoded data).
   static ArchSherpaConfig fromDynamicMap(Map<dynamic, dynamic> map) {
     final rawSchemaVersion = map['schema_version'];
     final schemaVersion = rawSchemaVersion is int
@@ -101,6 +107,7 @@ class ArchSherpaConfig {
     );
   }
 
+  /// Serializes configuration to a plain map for output/migration.
   static Map<String, dynamic> toMap(ArchSherpaConfig config) {
     return {
       'schema_version': config.schemaVersion,
@@ -140,33 +147,50 @@ class ArchSherpaConfig {
   }
 }
 
+/// Project-level scaffold configuration.
 class ProjectConfig {
+  /// Creates project config.
   ProjectConfig({required this.core});
 
+  /// Core folder names to scaffold under `lib/core`.
   final List<String> core;
 }
 
+/// Feature-level scaffold configuration.
 class FeaturesConfig {
+  /// Creates features config.
   FeaturesConfig({required this.basePath, required this.structure});
 
+  /// Base path for all generated features.
   final String basePath;
+
+  /// Section-to-folder structure map for each feature.
   final Map<String, List<String>> structure;
 }
 
+/// Selected state management strategy.
 class StateManagementConfig {
+  /// Creates state management config.
   StateManagementConfig({required this.type});
 
+  /// State management type (`riverpod`, `bloc`, `cubit`, `none`).
   final String type;
 }
 
+/// Test generation settings.
 class TestsConfig {
+  /// Creates tests config.
   TestsConfig({required this.enabled});
 
+  /// Whether feature test stubs are generated.
   final bool enabled;
 }
 
+/// Policy for deprecated-key handling behavior.
 class DeprecationsConfig {
+  /// Creates deprecations policy config.
   DeprecationsConfig({required this.policy});
 
+  /// Policy value (`warn` or `error`).
   final String policy;
 }

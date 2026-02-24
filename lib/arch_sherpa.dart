@@ -1,3 +1,8 @@
+/// Arch Sherpa public API.
+///
+/// Arch Sherpa — Part of the Flutter Sherpa Suite.
+library;
+
 export 'config/capabilities.dart';
 export 'config/architecture_auditor.dart';
 export 'config/compatibility_checker.dart';

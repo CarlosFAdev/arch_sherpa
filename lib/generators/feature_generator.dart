@@ -5,22 +5,32 @@ import 'package:path/path.dart' as p;
 import '../config/config_model.dart';
 import '../utils/file_utils.dart';
 
+/// Outcome of generating a single feature scaffold.
 class FeatureGenerationResult {
+  /// Creates a result with created and skipped relative paths.
   FeatureGenerationResult({
     required this.createdPaths,
     required this.skippedPaths,
   });
 
+  /// Relative paths that were created during generation.
   final List<String> createdPaths;
+
+  /// Relative paths that were skipped because they already existed.
   final List<String> skippedPaths;
 }
 
+/// Generates feature folders and starter files from configuration.
 class FeatureGenerator {
+  /// Creates a feature generator with optional filesystem helpers.
   FeatureGenerator({FileUtils? fileUtils})
       : _fileUtils = fileUtils ?? FileUtils();
 
   final FileUtils _fileUtils;
 
+  /// Generates a feature scaffold under the configured features base path.
+  ///
+  /// Returned paths are relative to [projectRoot].
   FeatureGenerationResult generate({
     required Directory projectRoot,
     required ArchSherpaConfig config,
