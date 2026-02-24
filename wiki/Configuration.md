@@ -18,4 +18,4 @@ Use `arch_sherpa config` to view the fully resolved configuration.
 Use `arch_sherpa config migrate` to emit a migrated config file.
 Use `arch_sherpa config deprecations` for a focused deprecated-key report.
 Set `deprecations.policy: error` to enforce deprecated-key failures in CI.
-See repository docs for team topology examples in `docs/configuration-examples.md`.
+See repository docs for team topology examples in `doc/configuration-examples.md`.
