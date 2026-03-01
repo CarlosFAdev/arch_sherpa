@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-03-01
+
+### Added
+- Standardized suite governance files and local contract: `SHERPA_SUITE_GUIDELINES.md`.
+- Added local Codex suite skill at `.codex/skills/sherpa_suite.md`.
+- Added `docs/pub_score_playbook.md` and docs mirror pages for config reference and troubleshooting.
+- Added CI pana gate script at `tool/pana_gate.dart`.
+
+### Changed
+- README rewritten to suite template with required badges, cross-links, and support section.
+- `pubspec.yaml` metadata and topics aligned with suite standards.
+- CI workflow now includes pana full-score gate.
+- `analysis_options.yaml` hardened with strict analyzer language settings.
+
 ## [0.2.1] - 2026-02-24
 
 ### Added
@@ -57,13 +71,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of Arch Sherpa CLI.
-- Commands: `init`, `add feature <name>`, `config`.
-- Configuration loading with precedence:
-  - `structure.yaml`
-  - `pubspec.yaml` (`flutter_sherpa.arch_sherpa`)
-  - internal defaults
-- Strict configuration validation with human-readable diagnostics.
-- Capability-based compatibility checker for state management.
-- Safe path normalization and traversal prevention for all writes.
-- Initial project and feature generators with non-overwriting behavior.
-- Product and platform documentation for "Arch Sherpa — Part of the Flutter Sherpa Suite".
