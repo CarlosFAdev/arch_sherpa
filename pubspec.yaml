@@ -1,6 +1,6 @@
 name: arch_sherpa
 description: CLI for architecture scaffolding and structure validation in Flutter projects.
-version: 0.2.2
+version: 0.2.3
 homepage: https://github.com/CarlosFAdev/arch_sherpa
 repository: https://github.com/CarlosFAdev/arch_sherpa
 issue_tracker: https://github.com/CarlosFAdev/arch_sherpa/issues
