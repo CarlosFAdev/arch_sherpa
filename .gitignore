@@ -3,3 +3,6 @@
 build/
 pubspec.lock
 coverage/
+.idea/
+.DS_Store
+pana_report.json
