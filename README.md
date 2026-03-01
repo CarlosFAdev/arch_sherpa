@@ -1,27 +1,35 @@
-# Arch Sherpa
+# arch_sherpa
 
-**Arch Sherpa — Part of the Flutter Sherpa Suite**
+**Flutter Sherpa Suite — Professional Engineering Toolkit for Flutter Teams**
 
-Arch Sherpa is an opinionated, automation-first Dart CLI for disciplined Flutter architecture scaffolding. It standardizes project structure, feature layout, template-based starter file generation, and state-management compatibility checks so teams can move faster with fewer architectural regressions.
+The Flutter Sherpa Suite is a collection of focused, production-grade engineering tools for Dart and Flutter projects. Each Sherpa solves a distinct problem in the software lifecycle — from architecture and versioning to technical debt, migrations, and risk analysis.
+
+`arch_sherpa` provides architecture scaffolding and structure validation for Flutter teams.
+
+[![pub package](https://img.shields.io/pub/v/arch_sherpa.svg)](https://pub.dev/packages/arch_sherpa)
+[![pub points](https://img.shields.io/pub/points/arch_sherpa)](https://pub.dev/packages/arch_sherpa/score)
+[![Dart SDK](https://img.shields.io/badge/dart-%5E3.3.0-blue.svg)](https://dart.dev/get-dart)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/carlosfdev)
+[![Patreon](https://img.shields.io/badge/Patreon-support-000000?logo=patreon)](https://patreon.com/CarlosF_dev)
 
 ## Installation
-
-### Activate from pub.dev
 
 ```bash
 dart pub global activate arch_sherpa
 ```
 
-### Run locally in this repository
+## Quick Start
 
 ```bash
-dart pub get
-dart run bin/arch_sherpa.dart --help
+arch_sherpa init
+arch_sherpa add feature auth
+arch_sherpa doctor --strict
 ```
 
 ## Commands
 
-```bash
+```text
 arch_sherpa init
 arch_sherpa add feature <name>
 arch_sherpa config
@@ -34,123 +42,24 @@ arch_sherpa doctor
 arch_sherpa audit
 ```
 
-Command behavior:
-- Non-interactive and fail-fast
-- Exit code `1` on errors
-- Never writes outside project root
-- Never overwrites existing files/directories
-- Supports `--dry-run`, `--json`, `--project-root <path>`, `--write <path>`, `--fail-on-deprecated`, `--check`, and `--strict`
+## Documentation
 
-## Configuration Precedence
+- [Configuration Reference](docs/config-reference.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Pub Score Playbook](docs/pub_score_playbook.md)
+- [Legacy Architecture Docs](doc/architecture.md)
 
-Arch Sherpa resolves configuration in this order:
-1. `structure.yaml`
-2. `pubspec.yaml` at `flutter_sherpa.arch_sherpa`
-3. Internal defaults
+## Part of the Flutter Sherpa Suite
 
-## Default Configuration
+- [arch_sherpa](https://github.com/CarlosFAdev/arch_sherpa) - Architectural validation and structure enforcement
+- [semver_sherpa](https://github.com/CarlosFAdev/semver_sherpa) - Semantic versioning and changelog automation
+- [techdebt_sherpa](https://github.com/CarlosFAdev/techdebt_sherpa) - Technical debt observatory and hotspot detection
 
-When no configuration is present, Arch Sherpa uses:
-- `project.core`: `theme`, `widgets`, `utils`, `constants`, `routes`
-- `features.base_path`: `lib/features`
-- `state_management.type`: `riverpod`
-- `tests.enabled`: `false`
-
-Default feature structure:
-- `domain/entities`, `domain/repositories`, `domain/usecases`
-- `presentation/controllers`, `presentation/pages`, `presentation/widgets`
-- `data/repositories`, `data/models`, `data/datasources`
-- `application`
-
-When you run `add feature`, Arch Sherpa generates folder scaffolds and starter template files per layer. If `tests.enabled: true`, it also creates a feature test scaffold under `test/features/<feature_name>/`.
-
-## Configuration Example (`structure.yaml`)
-
-```yaml
-schema_version: 1
-
-project:
-  core:
-    - theme
-    - widgets
-    - utils
-    - constants
-    - routes
-
-features:
-  base_path: lib/features
-  structure:
-    domain:
-      - entities
-      - repositories
-      - usecases
-    presentation:
-      - controllers
-      - pages
-      - widgets
-    data:
-      - repositories
-      - models
-      - datasources
-    application: []
-
-state_management:
-  type: riverpod
-
-tests:
-  enabled: false
-
-deprecations:
-  policy: warn
-```
-
-## Additional Operational Commands
-
-- `arch_sherpa config validate`: validates resolved config plus compatibility rules
-- `arch_sherpa config migrate`: emits a migrated config file (`structure.migrated.yaml`)
-  - in-place mode: `arch_sherpa config migrate --write structure.yaml`
-  - CI gate mode: `arch_sherpa config migrate --check`
-  - check mode now also detects diffs between `structure.yaml` and normalized migration output
-- `arch_sherpa config deprecations`: explicit report of deprecated keys and replacement hints
-- `deprecations.policy: error` can enforce the same behavior as `--fail-on-deprecated` in CI
-- `arch_sherpa doctor`: runs diagnostics suitable for CI and local checks
-- `arch_sherpa doctor` fails if migration is required, enabling single-command CI gating
-- `arch_sherpa doctor --strict` enforces stricter CI profile checks (including explicit config source)
-- `arch_sherpa audit`: detects drift between existing feature folders and configured structure
-
-## State Management Compatibility
-
-Capabilities are inferred from presentation folders:
-- `presentationControllers`
-- `presentationProviders`
-- `presentationBlocs`
-
-Rules:
-- `riverpod` requires `controllers` or `providers`
-- `bloc` and `cubit` require `blocs`
-- `none` requires none of the above
-
-On incompatibility, Arch Sherpa returns detected capabilities, required capabilities, and a suggested remediation.
-
-Deprecated config aliases from older drafts are accepted with warnings and normalized during load/migration.
-
-## Integration with `semver_sherpa`
-
-Use Arch Sherpa for architecture scaffolding and `semver_sherpa` for disciplined release/version workflows. Together they provide structure-first development with semver-driven delivery in the Flutter Sherpa Suite.
-
-## Support
+## Support the Project
 
 - Buy Me a Coffee: https://buymeacoffee.com/carlosfdev
 - Patreon: https://patreon.com/CarlosF_dev
 
-## Docs
+## License
 
-- [Pub.dev Example](example/README.md)
-- [Overview](doc/overview.md)
-- [Configuration](doc/configuration.md)
-- [Configuration Examples](doc/configuration-examples.md)
-- [Commands](doc/commands.md)
-- [Architecture](doc/architecture.md)
-- [Roadmap](doc/roadmap.md)
-- [Contributing](doc/contributing.md)
-- [Release Operations](doc/release-operations.md)
+MIT. See [LICENSE](LICENSE).

@@ -1,18 +1,13 @@
 # Security Policy
 
-**Arch Sherpa — Part of the Flutter Sherpa Suite**
+## Reporting a vulnerability
 
-## Supported Versions
-
-Security fixes are applied to the latest minor release line.
-
-## Reporting a Vulnerability
-
-Please report vulnerabilities privately via the repository security advisory flow.
+Please report potential security vulnerabilities privately to project maintainers.
 
 Include:
 - affected version
-- reproduction details
-- potential impact
+- reproduction steps
+- expected vs actual behavior
+- impact assessment
 
-Do not open public issues for undisclosed vulnerabilities.
+Do not disclose unpatched vulnerabilities publicly.
