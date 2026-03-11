@@ -44,9 +44,9 @@ arch_sherpa audit
 
 ## Documentation
 
-- [Configuration Reference](docs/config-reference.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Pub Score Playbook](docs/pub_score_playbook.md)
+- [Configuration Reference](doc/config-reference.md)
+- [Troubleshooting](doc/troubleshooting.md)
+- [Pub Score Playbook](doc/pub_score_playbook.md)
 - [Legacy Architecture Docs](doc/architecture.md)
 
 ## Part of the Flutter Sherpa Suite

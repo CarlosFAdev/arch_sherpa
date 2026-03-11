@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Moved publish-facing reference pages from `docs/` to `doc/` to match pub package layout conventions.
+
 ## [0.2.5] - 2026-03-11
 
 ### Changed
