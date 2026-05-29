@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-29
+
+### Added
+- Added neutral Darwin dependency-manager structural detection for CocoaPods, Swift Package Manager, mixed, none, and unknown setups.
+
+### Changed
+- Removed CocoaPods-only assumptions from iOS/macOS validation and scaffolding guidance.
+- Updated documentation to distinguish `arch_sherpa` structural checks from `dep_sherpa` dependency-readiness analysis.
+- Improved command examples and documentation for local suite report workflows.
+
+### Fixed
+- Prevented Dart-only and non-native Flutter packages from receiving irrelevant CocoaPods-related warnings.
+- Suppressed Darwin dependency-manager missing-metadata warnings for normal Flutter app native shells while preserving the warning for Flutter plugins with Darwin platform declarations.
+
 ## [0.2.6] - 2026-03-11
 
 ### Changed

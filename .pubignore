@@ -1,4 +1,5 @@
 .github/
 .idea/
 coverage/
+pana_report.json
 wiki/
