@@ -4,6 +4,8 @@
 
 Arch Sherpa is an architecture automation CLI for Flutter teams that value consistency, maintainability, and fast onboarding.
 
+Arch Sherpa validates project structure and generated feature layout. It does not require CocoaPods as the universal iOS/macOS dependency manager, and it does not duplicate `dep_sherpa` dependency-readiness analysis.
+
 ## Pages
 
 - [Getting Started](Getting-Started.md)

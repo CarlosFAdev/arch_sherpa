@@ -8,6 +8,10 @@
 - `dart analyze` passes
 - `dart test` passes
 - `dart pub publish --dry-run` passes
+- `dart pub global run pana -j . > pana_report.json` produces max points
+- `dart run tool/pana_gate.dart pana_report.json` passes
+
+Publishing and pushing tags require explicit release-owner approval. A local release tag can be created before push approval, but pub.dev publishing must remain a separate explicit step.
 
 ## CI Workflows
 

@@ -27,3 +27,6 @@ git tag v0.1.0
 - CI checks: format, analyze, test
 - Tag checks: changelog entry for tagged version
 - Publish validation: `dart pub publish --dry-run`
+- Pub score gate: `dart pub global run pana -j . > pana_report.json` and `dart run tool/pana_gate.dart pana_report.json`
+
+Do not push tags or publish to pub.dev until the release owner explicitly approves those actions.

@@ -4,6 +4,8 @@
 
 Arch Sherpa is a Dart CLI focused on architecture automation for Flutter projects. It enforces consistent folder conventions, configurable feature scaffolding, and explicit state-management compatibility constraints.
 
+It performs structural validation only. For iOS/macOS projects, Arch Sherpa does not require CocoaPods as a universal dependency-manager model and does not duplicate `dep_sherpa` Swift Package Manager readiness analysis.
+
 ## Design Goals
 
 - Opinionated, maintainable architecture defaults

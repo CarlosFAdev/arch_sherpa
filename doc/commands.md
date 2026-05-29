@@ -60,6 +60,30 @@ Runs diagnostics for:
 Detects architecture drift by scanning generated feature directories and
 reporting missing configured section/folder paths.
 
+Also performs lightweight Darwin native dependency-manager structural detection:
+- Info when CocoaPods metadata is present
+- Info when Swift Package Manager metadata is present
+- Info when both CocoaPods and Swift Package Manager metadata are present
+- Warning when a Flutter plugin declares iOS/macOS/darwin support but neither
+  metadata type is found
+
+Normal Flutter app native shells are not warned about missing CocoaPods or Swift
+Package Manager metadata unless dependency-manager markers are present.
+
+This is not dependency readiness analysis. Use `dep_sherpa` for Darwin SPM
+readiness and migration-risk inspection, and `techdebt_sherpa` to classify those
+signals as platform migration debt.
+
+Options:
+- `--format <json|md|both>`: write canonical report files for `audit`
+- `--out <path>`: output directory for canonical audit reports
+- `--report-output <path>`: also write the audit report to the given file path
+
+Canonical report files written by `arch_sherpa audit --format both --out reports`:
+
+- `reports/arch_sherpa.json`
+- `reports/arch_sherpa.md`
+
 ## Global Flags
 
 - `--dry-run`: compute operations without writing

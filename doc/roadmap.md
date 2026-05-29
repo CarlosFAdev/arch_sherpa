@@ -14,6 +14,14 @@ Completed:
 - Optional feature test scaffold generation via `tests.enabled`
 - Release/security/dependency automation baseline
 
+## Progress Update (2026-05-29)
+
+Completed:
+- Neutral Darwin dependency-manager structural detection for CocoaPods, Swift Package Manager, mixed, none, and unknown states
+- Audit findings for detected Darwin metadata and missing metadata in relevant plugin structures
+- Documentation split between Arch Sherpa structural validation, `dep_sherpa` dependency readiness, and `techdebt_sherpa` migration debt reporting
+- Local release readiness gates for `0.3.0`, including full pana points
+
 ## Phase 1: Foundation Hardening (target: March 2026)
 
 Deliverables:
