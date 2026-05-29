@@ -1,0 +1,7 @@
+name: flutter_package_no_plugin
+environment:
+  sdk: ^3.3.0
+dependencies:
+  flutter:
+    sdk: flutter
+

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:path/path.dart' as p;
 
 import 'package:test/test.dart';
@@ -138,6 +140,55 @@ stateManagement:
             .existsSync(),
         isTrue,
       );
+    });
+
+    test('audit can write report output to a file', () async {
+      final result = await _runCli(
+        ['audit', '--report-output', 'reports/arch_sherpa.json'],
+        projectRoot: tempRoot.path,
+      );
+      expect(result.exitCode, 0);
+      final reportFile = File(
+        p.join(tempRoot.path, 'reports', 'arch_sherpa.json'),
+      );
+      expect(reportFile.existsSync(), isTrue);
+      expect(reportFile.readAsStringSync(), contains('Architecture audit'));
+    });
+
+    test('audit json report output can be written to a file', () async {
+      final result = await _runCli(
+        ['--json', 'audit', '--report-output', 'reports/arch_sherpa.json'],
+        projectRoot: tempRoot.path,
+      );
+      expect(result.exitCode, 0);
+      final reportFile = File(
+        p.join(tempRoot.path, 'reports', 'arch_sherpa.json'),
+      );
+      expect(reportFile.existsSync(), isTrue);
+      final decoded =
+          jsonDecode(reportFile.readAsStringSync()) as Map<String, dynamic>;
+      expect(decoded['command'], 'audit');
+      expect(decoded['schema_version'], '0.1.0');
+      expect(decoded['summary'], {
+        'circular_dependencies': 0,
+        'layering_violations': 0,
+        'unstable_modules': 0,
+      });
+    });
+
+    test('audit supports normalized --format and --out options', () async {
+      final result = await _runCli(
+        ['audit', '--format', 'both', '--out', 'reports'],
+        projectRoot: tempRoot.path,
+      );
+      expect(result.exitCode, 0);
+      expect(
+          File(p.join(tempRoot.path, 'reports', 'arch_sherpa.json'))
+              .existsSync(),
+          isTrue);
+      expect(
+          File(p.join(tempRoot.path, 'reports', 'arch_sherpa.md')).existsSync(),
+          isTrue);
     });
 
     test('doctor json output is machine-readable', () async {
@@ -282,6 +333,121 @@ state_management:
       expect(audit.stdout, contains('lib/features/profile/domain'));
     });
 
+    test('audit does not warn for Dart-only packages', () async {
+      File('${tempRoot.path}/pubspec.yaml').writeAsStringSync('name: sample\n');
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(audit.stdout, isNot(contains('CocoaPods')));
+      expect(audit.stdout, isNot(contains('darwin.dependency_manager')));
+    });
+
+    test('audit does not warn for Flutter packages without Darwin structure',
+        () async {
+      File('${tempRoot.path}/pubspec.yaml').writeAsStringSync('''
+name: sample
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(audit.stdout, isNot(contains('CocoaPods')));
+      expect(audit.stdout, isNot(contains('darwin.dependency_manager')));
+    });
+
+    test('audit reports CocoaPods Darwin metadata as structural info',
+        () async {
+      _writeProjectFile(tempRoot, 'ios/Podfile', '# CocoaPods\n');
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(
+        audit.stdout,
+        contains('Darwin native dependency manager detected: CocoaPods.'),
+      );
+      expect(
+        audit.stdout,
+        contains('[darwin.dependency_manager.detected]'),
+      );
+    });
+
+    test('audit reports Swift Package Manager metadata as structural info',
+        () async {
+      _writeProjectFile(
+        tempRoot,
+        'ios/Package.swift',
+        '// swift-tools-version: 6.0\n',
+      );
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(
+        audit.stdout,
+        contains(
+          'Darwin native dependency manager detected: Swift Package Manager.',
+        ),
+      );
+    });
+
+    test('audit reports mixed Darwin metadata as structural info', () async {
+      _writeProjectFile(tempRoot, 'ios/Podfile', '# CocoaPods\n');
+      _writeProjectFile(
+        tempRoot,
+        'ios/Package.swift',
+        '// swift-tools-version: 6.0\n',
+      );
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(
+        audit.stdout,
+        contains(
+          'Darwin native dependency manager detected: mixed CocoaPods and Swift Package Manager.',
+        ),
+      );
+    });
+
+    test('audit warns when Darwin structure lacks dependency metadata',
+        () async {
+      File('${tempRoot.path}/pubspec.yaml').writeAsStringSync('''
+name: sample_plugin
+dependencies:
+  flutter:
+    sdk: flutter
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: SamplePlugin
+''');
+      _writeProjectFile(
+        tempRoot,
+        'ios/Classes/SamplePlugin.swift',
+        'class SamplePlugin {}\n',
+      );
+
+      final audit = await _runCli(['audit'], projectRoot: tempRoot.path);
+
+      expect(audit.exitCode, 0);
+      expect(
+        audit.stdout,
+        contains(
+          'iOS/macOS native structure detected, but no CocoaPods or Swift Package Manager metadata was found.',
+        ),
+      );
+      expect(
+        audit.stdout,
+        contains('[darwin.dependency_manager.missing_metadata]'),
+      );
+    });
+
     test('generates bloc and tests templates when configured', () async {
       File('${tempRoot.path}/structure.yaml').writeAsStringSync('''
 schema_version: 1
@@ -393,6 +559,13 @@ Future<ProcessResult> _runCli(
     ['run', 'bin/arch_sherpa.dart', '--project-root', projectRoot, ...args],
     workingDirectory: repoRoot,
   );
+}
+
+void _writeProjectFile(
+    Directory projectRoot, String relativePath, String text) {
+  final file = File(p.join(projectRoot.path, relativePath));
+  file.parent.createSync(recursive: true);
+  file.writeAsStringSync(text);
 }
 
 void _expectFileMatchesSnapshot({
