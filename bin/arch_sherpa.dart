@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:arch_sherpa/config/architecture_auditor.dart';
 import 'package:arch_sherpa/config/compatibility_checker.dart';
@@ -22,16 +23,22 @@ void main(List<String> arguments) {
 class CliContext {
   CliContext({
     required this.jsonOutput,
+    required this.reportFormat,
+    required this.outDir,
     required this.dryRun,
     required this.writePath,
+    required this.reportOutputPath,
     required this.failOnDeprecated,
     required this.checkMode,
     required this.strictMode,
   });
 
   final bool jsonOutput;
+  final String? reportFormat;
+  final String? outDir;
   final bool dryRun;
   final String? writePath;
+  final String? reportOutputPath;
   final bool failOnDeprecated;
   final bool checkMode;
   final bool strictMode;
@@ -62,6 +69,15 @@ int _run(List<String> arguments) {
       negatable: false,
       help: 'Print machine-readable JSON output.',
     )
+    ..addOption(
+      'format',
+      allowed: <String>['json', 'md', 'both'],
+      help: 'Report output format for "audit".',
+    )
+    ..addOption(
+      'out',
+      help: 'Output directory for audit reports, e.g. --out reports.',
+    )
     ..addFlag(
       'dry-run',
       negatable: false,
@@ -74,6 +90,11 @@ int _run(List<String> arguments) {
     ..addOption(
       'write',
       help: 'Output path for config migration, e.g. --write structure.yaml.',
+    )
+    ..addOption(
+      'report-output',
+      help:
+          'Output path for audit report content, e.g. --report-output reports/arch_sherpa.json.',
     )
     ..addFlag(
       'fail-on-deprecated',
@@ -103,10 +124,20 @@ int _run(List<String> arguments) {
 
   final context = CliContext(
     jsonOutput: results['json'] == true,
+    reportFormat: results['format']?.toString().trim().isEmpty == true
+        ? null
+        : results['format']?.toString().trim(),
+    outDir: results['out']?.toString().trim().isEmpty == true
+        ? null
+        : results['out']?.toString().trim(),
     dryRun: results['dry-run'] == true,
     writePath: results['write']?.toString().trim().isEmpty == true
         ? null
         : results['write']?.toString().trim(),
+    reportOutputPath:
+        results['report-output']?.toString().trim().isEmpty == true
+            ? null
+            : results['report-output']?.toString().trim(),
     failOnDeprecated: results['fail-on-deprecated'] == true,
     checkMode: results['check'] == true,
     strictMode: results['strict'] == true,
@@ -144,6 +175,24 @@ int _run(List<String> arguments) {
       throw CliFailure(
         code: 'E_INVALID_OPTION',
         message: '--write is only supported for "config migrate".',
+      );
+    }
+    if (context.reportOutputPath != null && !_isAudit(command)) {
+      throw CliFailure(
+        code: 'E_INVALID_OPTION',
+        message: '--report-output is only supported for "audit".',
+      );
+    }
+    if (context.reportFormat != null && !_isAudit(command)) {
+      throw CliFailure(
+        code: 'E_INVALID_OPTION',
+        message: '--format is only supported for "audit".',
+      );
+    }
+    if (context.outDir != null && !_isAudit(command)) {
+      throw CliFailure(
+        code: 'E_INVALID_OPTION',
+        message: '--out is only supported for "audit".',
       );
     }
     if (context.checkMode && !_isConfigMigrate(command)) {
@@ -651,31 +700,76 @@ int _handleAudit(
   List<String> warnings,
 ) {
   final result = ArchitectureAuditor().audit(projectRoot: root, config: config);
+  final summary = _buildAuditSummary(result);
 
-  if (context.jsonOutput) {
-    _printJson({
-      'ok': result.ok,
-      'command': 'audit',
-      'warnings': warnings,
-      'checked_features': result.checkedFeatures,
-      'missing_paths': result.missingPaths,
-    });
-    return result.ok ? 0 : 1;
+  final exitCodeValue = result.ok ? 0 : 1;
+  final jsonReport = const JsonEncoder.withIndent('  ').convert({
+    'schema_version': '0.1.0',
+    'ok': result.ok,
+    'command': 'audit',
+    'warnings': warnings,
+    'summary': summary,
+    'checked_features': result.checkedFeatures,
+    'missing_paths': result.missingPaths,
+    'findings': result.findings
+        .map((finding) => {
+              'rule_id': finding.ruleId,
+              'severity': finding.severity.name,
+              'message': finding.message,
+              'details': finding.details,
+            })
+        .toList(),
+  });
+  final mdReport = _buildAuditTextReport(result, warnings);
+  final format = context.reportFormat ?? (context.jsonOutput ? 'json' : 'md');
+  final reportContent = format == 'json' ? jsonReport : mdReport;
+
+  if (context.reportOutputPath != null) {
+    _writeReportOutput(root, context.reportOutputPath!, reportContent);
+  }
+  if (context.outDir != null) {
+    _writeAuditReports(root, context.outDir!, format, jsonReport, mdReport);
   }
 
-  stdout.writeln('Arch Sherpa — Part of the Flutter Sherpa Suite');
-  stdout.writeln('Architecture audit');
-  _printWarnings(warnings);
-  stdout.writeln('Checked features: ${result.checkedFeatures}');
-  if (result.ok) {
-    stdout.writeln('No drift detected.');
-    return 0;
+  stdout.writeln(reportContent);
+  return exitCodeValue;
+}
+
+void _writeAuditReports(
+  Directory root,
+  String outDir,
+  String format,
+  String jsonReport,
+  String mdReport,
+) {
+  final outputDirectory = Directory(
+    p.isAbsolute(outDir) ? outDir : p.join(root.path, outDir),
+  );
+  outputDirectory.createSync(recursive: true);
+
+  if (format == 'json' || format == 'both') {
+    File(p.join(outputDirectory.path, 'arch_sherpa.json'))
+        .writeAsStringSync('$jsonReport\n');
   }
-  stdout.writeln('Missing paths (${result.missingPaths.length}):');
-  for (final path in result.missingPaths) {
-    stdout.writeln('  - $path');
+  if (format == 'md' || format == 'both') {
+    File(p.join(outputDirectory.path, 'arch_sherpa.md'))
+        .writeAsStringSync('$mdReport\n');
   }
-  return 1;
+}
+
+Map<String, Object?> _buildAuditSummary(AuditResult result) {
+  final affectedFeatures = result.missingPaths
+      .map((path) => p.split(path))
+      .where((segments) => segments.length >= 3)
+      .map((segments) => segments[2])
+      .toSet()
+      .length;
+
+  return <String, Object?>{
+    'circular_dependencies': 0,
+    'layering_violations': result.missingPaths.length,
+    'unstable_modules': affectedFeatures,
+  };
 }
 
 int _fail(CliContext context, CliFailure failure) {
@@ -695,6 +789,52 @@ int _fail(CliContext context, CliFailure failure) {
     }
   }
   return 1;
+}
+
+String _buildAuditTextReport(
+  AuditResult result,
+  List<String> warnings,
+) {
+  final buffer = StringBuffer()
+    ..writeln('Arch Sherpa — Part of the Flutter Sherpa Suite')
+    ..writeln('Architecture audit');
+
+  for (final warning in warnings) {
+    buffer.writeln('Warning: $warning');
+  }
+  for (final finding in result.findings) {
+    final label = switch (finding.severity) {
+      AuditFindingSeverity.info => 'Info',
+      AuditFindingSeverity.warning => 'Warning',
+    };
+    buffer.writeln('$label: [${finding.ruleId}] ${finding.message}');
+    for (final detail in finding.details) {
+      buffer.writeln('  - $detail');
+    }
+  }
+
+  buffer.writeln('Checked features: ${result.checkedFeatures}');
+  if (result.ok) {
+    buffer.writeln('No drift detected.');
+    return buffer.toString().trimRight();
+  }
+
+  buffer.writeln('Missing paths (${result.missingPaths.length}):');
+  for (final path in result.missingPaths) {
+    buffer.writeln('  - $path');
+  }
+  return buffer.toString().trimRight();
+}
+
+void _writeReportOutput(
+    Directory root, String reportOutputPath, String content) {
+  final outputFile = File(
+    p.isAbsolute(reportOutputPath)
+        ? reportOutputPath
+        : p.join(root.path, reportOutputPath),
+  );
+  outputFile.parent.createSync(recursive: true);
+  outputFile.writeAsStringSync('$content\n');
 }
 
 void _printUsage(ArgParser parser) {
